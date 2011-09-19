@@ -24,7 +24,7 @@ module EventMachine
     end
 
     def done
-      EM.next_tick{
+      EM.schedule {
         finish_em_spec_fiber
       }
     end
