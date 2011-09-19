@@ -3,7 +3,7 @@ task :gem => :gemspec do
 end
 
 task :gemspec do
-  
+
 end
 
 task :install => :gem do
@@ -14,5 +14,5 @@ task :default => :spec
 
 task :spec do
   sh 'bacon test/bacon_spec.rb'
-  sh 'spec -f specdoc test/rspec_spec.rb test/rspec_fail_examples.rb'
+  sh 'rspec -f documentation test/rspec_spec.rb test/rspec_fail_examples.rb'
 end
