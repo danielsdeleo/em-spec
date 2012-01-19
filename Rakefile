@@ -12,6 +12,7 @@ end
 
 task :default => [:bacon, :spec]
 
+desc "Run Bacon spec"
 task :bacon do
   sh 'bundle exec bacon test/bacon_spec.rb'
 end
