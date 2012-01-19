@@ -14,5 +14,5 @@ task :default => :spec
 
 task :spec do
   sh 'bacon test/bacon_spec.rb'
-  sh 'rspec -f documentation test/rspec_spec.rb test/rspec_fail_examples.rb'
+  sh 'rspec -f documentation test/rspec_spec.rb test/rspec_fail_examples.rb --color'
 end

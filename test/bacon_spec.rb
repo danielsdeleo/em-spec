@@ -1,5 +1,5 @@
 require 'bacon'
-require File.dirname(__FILE__) + '/../lib/em-spec/bacon'
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'em-spec', 'bacon')
 
 EM.spec_backend = EventMachine::Spec::Bacon
 

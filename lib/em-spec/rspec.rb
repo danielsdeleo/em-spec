@@ -10,12 +10,12 @@ module EventMachine
         em_spec_exception = nil
         @_em_spec_fiber = Fiber.new do
           begin
-            block.call
+            EM.next_tick { block.call }
           rescue Exception => em_spec_exception
             done
           end
           Fiber.yield
-        end  
+        end
 
         @_em_spec_fiber.resume
 
@@ -33,11 +33,11 @@ module EventMachine
 
     def finish_em_spec_fiber
       EM.stop_event_loop if EM.reactor_running?
-      @_em_spec_fiber.resume if @_em_spec_fiber.alive?
+      @_em_spec_fiber.transfer if @_em_spec_fiber.alive?
     end
 
   end
-  
+
   module Spec
 
     include SpecHelper
@@ -47,9 +47,21 @@ module EventMachine
         super(&block)
       end
     end
-
   end
-  
+
+  module RSpec
+    include SpecHelper
+
+    def self.included(example_group)
+      example_group.around :each do |example|
+        em do
+          begin
+            example.run
+          ensure
+            done
+          end
+        end
+      end
+    end
+  end
 end
-
-
