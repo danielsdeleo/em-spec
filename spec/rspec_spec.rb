@@ -26,7 +26,7 @@ describe EventMachine, "when testing with EM::SpecHelper" do
 end
 
 describe EventMachine, "when testing with EM::Spec" do
-  include EM::RSpec
+  include EM::Spec
 
   it 'should work' do
     done

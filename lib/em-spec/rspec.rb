@@ -5,21 +5,24 @@ module EventMachine
   module SpecHelper
 
     def em(&block)
-
       EM.run do
-        em_spec_exception = nil
-        @_em_spec_fiber = Fiber.new do
-          begin
-            EM.next_tick { block.call }
-          rescue Exception => em_spec_exception
-            done
+        EM.next_tick do
+          em_spec_exception = nil
+
+          @_em_spec_fiber = Fiber.new do
+            begin
+              block.call
+            rescue Exception => em_spec_exception
+              done
+            end
+
+            Fiber.yield
           end
-          Fiber.yield
+
+          @_em_spec_fiber.resume
+
+          raise em_spec_exception if em_spec_exception
         end
-
-        @_em_spec_fiber.resume
-
-        raise em_spec_exception if em_spec_exception
       end
     end
 
@@ -45,22 +48,6 @@ module EventMachine
     def instance_eval(&block)
       em do
         super(&block)
-      end
-    end
-  end
-
-  module RSpec
-    include SpecHelper
-
-    def self.included(example_group)
-      example_group.around :each do |example|
-        em do
-          begin
-            example.run
-          ensure
-            done
-          end
-        end
       end
     end
   end

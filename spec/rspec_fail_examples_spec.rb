@@ -1,8 +1,7 @@
 require File.dirname(__FILE__) + '/../lib/em-spec/rspec'
 
 describe EventMachine, "when running failing examples" do
-  #include EM::SpecHelper
-  include EM::RSpec
+  include EM::Spec
 
   it "should not bubble failures beyond rspec" do
     EM.add_timer(0.1) do
