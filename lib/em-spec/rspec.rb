@@ -5,26 +5,29 @@ module EventMachine
   module SpecHelper
 
     def em(&block)
-
       EM.run do
-        em_spec_exception = nil
-        @_em_spec_fiber = Fiber.new do
-          begin
-            block.call
-          rescue Exception => em_spec_exception
-            done
+        EM.next_tick do
+          em_spec_exception = nil
+
+          @_em_spec_fiber = Fiber.new do
+            begin
+              block.call
+            rescue Exception => em_spec_exception
+              done
+            end
+
+            Fiber.yield
           end
-          Fiber.yield
-        end  
 
-        @_em_spec_fiber.resume
+          @_em_spec_fiber.resume
 
-        raise em_spec_exception if em_spec_exception
+          raise em_spec_exception if em_spec_exception
+        end
       end
     end
 
     def done
-      EM.next_tick{
+      EM.schedule {
         finish_em_spec_fiber
       }
     end
@@ -33,11 +36,11 @@ module EventMachine
 
     def finish_em_spec_fiber
       EM.stop_event_loop if EM.reactor_running?
-      @_em_spec_fiber.resume if @_em_spec_fiber.alive?
+      @_em_spec_fiber.transfer if @_em_spec_fiber.alive?
     end
 
   end
-  
+
   module Spec
 
     include SpecHelper
@@ -47,9 +50,5 @@ module EventMachine
         super(&block)
       end
     end
-
   end
-  
 end
-
-

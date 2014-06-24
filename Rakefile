@@ -3,16 +3,22 @@ task :gem => :gemspec do
 end
 
 task :gemspec do
-  
+
 end
 
 task :install => :gem do
   sh 'sudo gem install em-spec-*.gem'
 end
 
-task :default => :spec
+task :default => [:bacon, :spec]
 
-task :spec do
-  sh 'bacon test/bacon_spec.rb'
-  sh 'spec -f specdoc test/rspec_spec.rb test/rspec_fail_examples.rb'
+desc "Run Bacon spec"
+task :bacon do
+  sh 'bundle exec bacon test/bacon_spec.rb'
+end
+
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = ["--format documentation", "--color"]
+  t.pattern = "./spec/**/*_spec.rb"
 end
